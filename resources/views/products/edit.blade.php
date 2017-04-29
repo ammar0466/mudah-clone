@@ -5,7 +5,7 @@
     <div class="row">
         <div class="col-md-8 col-md-offset-2">
             <div class="panel panel-primary">
-                <div class="panel-heading">CreateProducts</div>
+                <div class="panel-heading">Edit Products</div>
                 
                 <div class="panel-body">
                 {{-- papar validation error --}}
@@ -26,7 +26,7 @@
 
                 {{-- tambah form di sini --}}
                 
-                {!! Form::open(['route' => 'products.store' , 'files' => true ]) !!}
+                {!! Form::open(['route' => ['products.update',$product->id] , 'method'=>'PUT' , 'files' => true ]) !!}
                     
 
                     <div class="form-group {{$errors->has('condition')?'has-error':false }}">
@@ -37,32 +37,32 @@
 
                     <div class="form-group {{$errors->has('brand_id')?'has-error':false }}">
                         {!!Form::label('brand_id', 'Brand');!!}
-                        {!!Form::select('brand_id', $brands, null, ['placeholder' => 'Select Brand','class'=>'form-control']);!!}
+                        {!!Form::select('brand_id', $brands, $product->brand_id, ['placeholder' => 'Select Brand','class'=>'form-control']);!!}
                     </div>
 
                     <div class="form-group {{$errors->has('state_id')?'has-error':false }}">
                         {!!Form::label('state_id', 'State');!!}
-                        {!!Form::select('state_id', $states, null, ['placeholder' => 'Select State','class'=>'form-control','id'=>'state_id']);!!}
+                        {!!Form::select('state_id', $states, $product->area->state_id, ['placeholder' => 'Select State','class'=>'form-control','id'=>'state_id']);!!}
                     </div>
 
                     <div class="form-group {{$errors->has('area_id')?'has-error':false }}">
                         {!!Form::label('area_id', 'Area');!!}
-                        {!!Form::select('area_id', $areas, null, ['placeholder' => 'Select Area','class'=>'form-control','id'=>'area_id']);!!}
+                        {!!Form::select('area_id', $areas, $product->area_id, ['placeholder' => 'Select Area','class'=>'form-control','id'=>'area_id']);!!}
                     </div>
 
                     <div class="form-group {{$errors->has('category_id')?'has-error':false }}">
                         {!!Form::label('category_id', 'Category');!!}
-                        {!!Form::select('category_id', $categories, null, ['placeholder' => 'Select Category','class'=>'form-control']);!!}
+                        {!!Form::select('category_id', $categories, $product->subcategory->category_id, ['placeholder' => 'Select Category','class'=>'form-control']);!!}
                     </div>
 
                     <div class="form-group {{$errors->has('subcategory_id')?'has-error':false }}">
                         {!!Form::label('subcategory_id', 'Subcategory');!!}
-                        {!!Form::select('subcategory_id', [], null, ['placeholder' => 'Select Subcategory','class'=>'form-control']);!!}
+                        {!!Form::select('subcategory_id', $subcategory, $product->subcategory_id, ['placeholder' => 'Select Subcategory','class'=>'form-control']);!!}
                     </div>
 
                     <div class="form-group {{$errors->has('product_name')?'has-error':false }} ">
                         {!!Form::label('product_name', 'Product Name');!!}
-                        {!! Form::text('product_name','',['class'=>'form-control']); !!}
+                        {!! Form::text('product_name',$product->product_name,['class'=>'form-control']); !!}
                     </div>
 
                     <div class="form-group {{$errors->has('product_image')?'has-error':false }}">
@@ -70,21 +70,27 @@
                         {!! Form::file('product_image',['class'=>'form-control']); !!}
                     </div>
 
+                    <div class="form-group">
+                        @if(!empty($product->product_image))
+                            <img src="{{ asset('storage/'.$product->product_image )}}">
+                        @endif
+                    </div>
+
                     <div class="form-group {{$errors->has('product_description')?'has-error':false }}">
                         {!!Form::label('product_description', 'Product Description');!!}
-                        {!! Form::textarea('product_description','',['class'=>'form-control']); !!}
+                        {!! Form::textarea('product_description',$product->product_description,['class'=>'form-control']); !!}
                     </div>
 
                     <div class="form-group {{$errors->has('product_price')?'has-error':false }}">
                         {!!Form::label('product_price', 'Product Price');!!}
-                        {!! Form::text('product_price','',['class'=>'form-control']); !!}
+                        {!! Form::text('product_price',$product->product_price,['class'=>'form-control']); !!}
                     </div>
 
 
 
 
                     <div class="form-group">
-                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <button type="submit" class="btn btn-primary">Save</button>
 
                         <a href="{{ route('products.index') }}" class="btn btn-default">Cancel</a>
                     </div>

@@ -19,8 +19,18 @@ class Product extends Model
         return $this->belongsTo('App\Area','area_id','id');
     }
 
+    public function state()
+    {
+        return $this->belongsTo('App\State','state_id','id');
+    }
+
     public function subcategory()
     {
         return $this->belongsTo('App\Subcategory','subcategory_id','id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo('App\User','user_id','id');
     }
 }

@@ -9,6 +9,7 @@ use App\State;
 use App\Category;
 use App\Subcategory;
 use App\Area;
+use App\User;
 use Auth;
 use App\Http\Requests\CreateProductRequest;
 
@@ -20,11 +21,28 @@ class ProductsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
-        $products = Product::all();
-        return view('products.index', compact('products'));
+        //eager loading relationship to prevent multiple DB request
+        $products = Product::with('brand', 'subcategory','area','user');
+        //search or
+        if (!empty($request->search_anything)){
+
+            $search_anything = $request->search_anything;
+
+            $products = $products->where(function($query) use ($search_anything){
+                $query->orWhere('product_name','like','%'.$search_anything.'%')
+                        ->orWhere('product_description','like','%'.$search_anything.'%');
+
+            });
+        }
+        //paginate the data
+        $products = $products->paginate(3);
+
+        $brands = Brand::pluck('brand_name','id');
+        $categories = Category::pluck('category_name','id');
+        $states = State::pluck('state_name','id');
+        return view('products.index', compact('products','brands','categories','states'));
 
     }
 
@@ -76,8 +94,8 @@ class ProductsController extends Controller
 
         $product->save();
         //set success message
-        // flash('Product successfully inserted')->success();
-        flash()->overlay('Product successfully inserted!', 'Success');
+        flash('Product successfully inserted')->success();
+        // flash()->overlay('Product successfully inserted!', 'Success');
 
         //kembali ke senarai product
         return redirect()->route('products.index');
@@ -104,7 +122,20 @@ class ProductsController extends Controller
      */
     public function edit($id)
     {
-        //
+        //dapatakan maklumat product
+        $product = Product::find($id);
+
+        $states = State::pluck('state_name','id');
+        $brands = Brand::pluck('brand_name','id');
+
+
+        // $areas = Area::pluck('area_name','id');
+        $categories = Category::pluck('category_name','id');
+        //get area based on previous state
+        $areas = $this->getStateAreas($product->area->state_id);
+        $subcategory = $this->getCategorySubcategories($product->subcategory->category_id);
+
+        return view('products.edit',compact('brands','states','categories','areas','product','subcategory'));
     }
 
     /**
@@ -116,7 +147,35 @@ class ProductsController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $product = Product::findOrFail($id);
+        $product->product_name = $request->product_name;
+        $product->product_description = $request->product_description;
+        $product->product_price = $request->product_price;
+        $product->brand_id = $request->brand_id;
+        $product->area_id = $request->area_id;
+        $product->subcategory_id = $request->subcategory_id;
+        $product->condition = $request->condition;
+
+        // cara dapatkan current user ID
+        // $product->user_id = auth()->id();
+
+        //upload image
+        if ($request->hasFile('product_image')){
+            $path = $request->product_image->store('images');
+
+            //save
+            $product->product_image = $request->product_image->hashName();
+
+
+        }
+
+        $product->save();
+        //set success message
+        // flash('Product successfully updated')->success();
+        flash()->overlay('Product successfully updated!', 'Success');
+
+        //kembali ke senarai product
+        return redirect()->route('products.index',$product->id);
     }
 
     /**
