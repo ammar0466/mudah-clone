@@ -101,151 +101,115 @@
 
 @section('script')
     <script type="text/javascript">
-        $( document ).ready(function() {
-            // console.log( "sekarang berada di form create product" );
+    
+    $( document ).ready(function() {
+        
+        //dapatkan previous selected state_id bila validation error
 
-            // dapatakan selected state selepas validation error
-            var selected_state_id = '{{ old('state_id')}}';
-            // console.log(selected_state_id);
+        var selected_state_id = '{{ old('state_id') }}';
 
-            if (selected_state_id.length>0){
-                console.log('kita akan panggil balik ajax dapatkan area');
-                getStateAreas2(selected_state_id);
-            }
+        //kalau ada selected state_id, kita panggil balik function ajax dapatkan area
 
-                //dapatkan previous selected area
+        if (selected_state_id.length>0) {
+            
+            getStateAreas(selected_state_id);
 
-            //dapatkan selected category selepas validation error
-            var selected_category_id = '{{ old('category_id')}}';
-            console.log(selected_category_id);
+        };
 
-            if (selected_category_id.length>0){
-                console.log('kita akan panggil balik ajax dapatkan area');
-                getCategorySub(selected_category_id);
-                
-            }
+        var selected_category_id = '{{ old('category_id') }}';
 
-            function getStateAreas2(state_id){
+        if (selected_category_id.length>0) {
+            
+            getCategorySubcategories(selected_category_id);
 
-                var ajax_url = '/products/areas/' + state_id;
+        };
 
-                $.ajax({
-                  url: ajax_url,
-                  async: false,
-                })
-                .done(function( data ) {
-                    
-                    //dah dapat data kosongkan dulu dropdown area
-                    $('#area_id').empty().append('<option value="">Select Area</option');
+        function getStateAreas(state_id){
 
-                    //loop data untuk hasilkan senarai option baru bagi dropdown
-                    $.each(data, function(area_id,area_name){
-                        // console.log(area_id);
-                        // console.log(area_name);
-                        $('#area_id').append('<option value='+area_id+'>'+area_name+'</option');
-                    });
-                    var selected_area_id = '{{ old('area_id') }} ';
-                    console.log(selected_area_id);
+          //define route untuk hantar id state ke controller, grab data area
 
-                    if(selected_area_id.length>0){
-                        $('#area_id').val(selected_area_id);
-                    }
+          var ajax_url = '/products/areas/' + state_id;
 
-                });
+          //dapatkan areas data dari Controller menggunakan Ajax
 
-            }
+          $.get( ajax_url, function( data ) {
+            
+            // dah dapat data, kosongkan dulu dropdown area dan tambah Select Area
 
+            $('#area_id').empty().append('<option value="">Select Area</option');
 
-            function getStateAreas(state_id){
+            // loop data untuk hasilkan senarai option baru bagi dropdown
+
+            $.each(data, function(area_id,area_name){
+            
+                $('#area_id').append('<option value='+area_id+'>'+area_name+'</option');
+            });
+
+            //dapatkan previous selected area if there is form validation error
+            var selected_area_id = '{{ old('area_id') }}';
+
+            if (selected_area_id.length>0) {
+                //pilih balik area based on previous selected are
+                $('#area_id').val(selected_area_id);
+            };
+
+          });
 
 
-                //dapatkan value state id yang di pilih
-                // var state_id = $(this).val();
-                // console.log(state_id);
+        }
 
-                //defin route untuk hantar id ke controller
-                var ajax_url = '/products/areas/' + state_id;
+        function getCategorySubcategories(category_id){
 
-                //dapatkan areas data dari controller
-                $.get( ajax_url, function( data ) {
-                // console.log(data);
+            //hantar id state ke controller, grab data area
 
-                    //dah dapat data kosongkan dulu dropdown area
-                    $('#area_id').empty().append('<option value="">Select Area</option');
+            var ajax_url = '/products/subcategories/' + category_id;
 
-                    //loop data untuk hasilkan senarai option baru bagi dropdown
-                    $.each(data, function(area_id,area_name){
-                        // console.log(area_id);
-                        // console.log(area_name);
-                        $('#area_id').append('<option value='+area_id+'>'+area_name+'</option');
-                    });
-                    var selected_area_id = '{{ old('area_id') }} ';
-                    console.log(selected_area_id);
+            $.get( ajax_url, function( data ) {
+              
+              // console.log(data);
 
-                    if(selected_area_id.length>0){
-                        $('#area_id').val(selected_area_id);
-                    }
-                });
-            }
+              $('#subcategory_id').empty().append('<option value="">Select SubCategory</option');
 
-            $( "#state_id" ).change(function() {
+              $.each(data, function(subcategory_id,subcategory_name){
+              
+                  $('#subcategory_id').append('<option value='+subcategory_id+'>'+subcategory_name+'</option');
+              });
 
-                //dapatkan value state id yang di pilih
-                var state_id = $(this).val();
-                // console.log(state_id);
+              //dapatkan previous selected subcategory if there is form validation error
+              var selected_subcategory_id = '{{ old('subcategory_id') }}';
 
-                getStateAreas(state_id);
+              if (selected_subcategory_id.length>0) {
+                  //pilih balik subcategory based on previous selected are
+                  $('#subcategory_id').val(selected_subcategory_id);
+              };
 
             });
 
-            function getCategorySub(category_id){
-                //dapatkan value state id yang di pilih
-                // var category_id = $(this).val();
-                // console.log(category_id);
+        }
 
-                //hantar id ke controller
-                var ajax_url = '/products/subcategories/' + category_id;
-                $.get( ajax_url, function( data ) {
-                // console.log(data);
+        //bila setiap kali pengguna tukar State, buat function di bawah
 
-                    $('#subcategory_id').empty().append('<option value="">Select Subcategory</option');
+        $( "#state_id" ).change(function() {
+          
+          //dapatkan value state yang kita pilih
+          var state_id = $(this).val();
 
-                    $.each(data, function(subcategory_id,subcategory_name){
-                        // console.log(subcategory_id);
-                        // console.log(subcategory_name);
-                        $('#subcategory_id').append('<option value='+subcategory_id+'>'+subcategory_name+'</option');
-                    });
-                    var selected_subcategory_id = '{{ old('subcategory_id')}}';
-                    if (selected_subcategory_id.length>0){
-                        $('#subcategory_id').val(selected_subcategory_id);
-                    }
-                });
-
-            }
-
-            $( "#category_id" ).change(function() {
-
-                //dapatkan value state id yang di pilih
-                var category_id = $(this).val();
-                // console.log(category_id);
-
-                getCategorySub(category_id);
-
-                // //hantar id ke controller
-                // var ajax_url = '/products/subcategories/' + category_id;
-                // $.get( ajax_url, function( data ) {
-                // // console.log(data);
-
-                // $('#subcategory_id').empty().append('<option value="">Select Subcategory</option');
-
-                // $.each(data, function(subcategory_id,subcategory_name){
-                //     // console.log(subcategory_id);
-                //     // console.log(subcategory_name);
-                //     $('#subcategory_id').append('<option value='+subcategory_id+'>'+subcategory_name+'</option');
-                // });
-                // });
-
-            });
+          getStateAreas(state_id);
+        
         });
-    </script>
+
+        $( "#category_id" ).change(function() {
+          
+          //dapatkan value state yang kita pilih
+          var category_id = $(this).val();
+
+          getCategorySubcategories(category_id);
+        
+        });
+
+
+    });
+
+
+</script>
 @endsection
