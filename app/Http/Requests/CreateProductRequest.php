@@ -34,6 +34,7 @@ class CreateProductRequest extends FormRequest
         'area_id' => 'required|integer',
         'category_id' => 'required',
         'subcategory_id' => 'required',
+        'product_image' => 'image|mimes:jpg,jpeg,png,gif',
 
 
 

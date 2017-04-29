@@ -78,6 +78,11 @@
             </div>
         </nav>
 
+        <div class="container-fluid col-md-3">
+            {{-- paparkan success/info/error/warning message --}}
+            @include('flash::message')
+        </div>
+        
         @yield('content')
     </div>
 
@@ -87,3 +92,6 @@
 </html>
 
 @yield('script')
+<script>
+    $('#flash-overlay-modal').modal();
+</script>

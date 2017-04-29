@@ -66,8 +66,23 @@ class ProductsController extends Controller
         // cara dapatkan current user ID
         $product->user_id = auth()->id();
 
+        //upload image
+        if ($request->hasFile('product_image')){
+            $path = $request->product_image->store('images');
+
+            //save
+            $product->product_image = $path;
+        }
+
         $product->save();
+        //set success message
+        // flash('Product successfully inserted')->success();
+        flash()->overlay('Product successfully inserted!', 'Success');
+
+        //kembali ke senarai product
         return redirect()->route('products.index');
+
+
     }
 
     /**
