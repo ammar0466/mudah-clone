@@ -72,7 +72,7 @@
 
                     <div class="form-group">
                         @if(!empty($product->product_image))
-                            <img src="{{ asset('storage/'.$product->product_image )}}">
+                            <img src="{{ asset('storage/uploads/'.$product->product_image )}}" class="img-responsive">
                         @endif
                     </div>
 
@@ -92,7 +92,7 @@
                     <div class="form-group">
                         <button type="submit" class="btn btn-primary">Save</button>
 
-                        <a href="{{ route('products.index') }}" class="btn btn-default">Cancel</a>
+                        <a href="{{ route('my_products') }}" class="btn btn-default">Cancel</a>
                     </div>
                 {!! Form::close() !!}
 

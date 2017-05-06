@@ -3,12 +3,15 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 
 
 class Product extends Model
 {
-    //
+    use SoftDeletes;
+
+    
     public function brand()
     {
         return $this->belongsTo('App\Brand','brand_id','id');
